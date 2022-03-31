@@ -1,0 +1,65 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using Microsoft.AspNetCore.Http.Extensions;
+@inherits UmbracoViewPage
+@{
+	Layout = null;
+	var isLoggedIn = Context.User?.Identity?.IsAuthenticated ?? false;
+}
+
+<html>
+	<head>
+		<title>Welcome - Bliss Shopping</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+		<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/css/main.css" />
+	</head>
+	
+	<body>
+
+		<!-- Navigation -->
+    	<div class="container">
+     	<nav class="navbar navbar-expand navbar-light">
+     		@{ 
+                var site = Model.Root();
+                var selection = site.Children.Where(x => x.IsVisible()); <!-- see below for explanation of IsVisible helper method -->
+            }
+            
+            <!-- uncomment this line if you want the site name to appear in the top navigation -->
+            <a class="nav-link @Html.Raw(Model.Id == site.Id ? "navi-link--active" : "")" href="@site.Url()">@site.Name()</a>
+            
+            @foreach (var item in selection)
+            {
+                if (@isLoggedIn)
+                {
+                    if(!@item.Url().Contains("registerlog-in"))
+                    {
+                        <a class="nav-link @(item.IsAncestorOrSelf(Model) ? "nav-link--active" : null)" href="@item.Url()">@item.Name()</a>
+                    }
+                }
+                else
+                {
+                    <a class="nav-link @(item.IsAncestorOrSelf(Model) ? "nav-link--active" : null)" href="@item.Url()">@item.Name()</a>
+                }
+                
+            }
+            @Html.Partial("LoginStatus")
+     	</nav>
+     </div>
+     
+		@RenderBody()
+		
+		<!-- Footer -->
+		<div class="container-fluid footer">
+			<div class="container">
+			@Model.Value("footerText", fallback: Fallback.ToAncestors)
+			</div>
+		</div>
+			
+	<!-- Scripts -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	
+	</body>
+</html>

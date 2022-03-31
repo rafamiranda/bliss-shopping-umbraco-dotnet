@@ -1,0 +1,51 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@using BlissShopping.Core.Features;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.WishList>
+@using ContentModels = BlissShopping.Core.PublishedContent;
+@using BlissShopping.Core.Controllers
+@using BlissShopping.Core.Controllers
+
+
+@{
+    Layout = "Master.cshtml";
+}
+
+
+<!-- Jumbotron, w title -->
+<div class="jumbotron text-center jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-1">@Model.Value("wishlistTitle")</h1>
+        <p>Check your list!</p>
+    </div>
+</div>
+
+<!-- Main container -->
+<div class="container">
+    <!-- Latest blog posts -->
+    <div class="row section">
+        <div class="col-md-12">
+            <h3>Your Wishlist</h3>
+
+            @{
+                var selection = Model.Products;
+            }
+            @foreach (var item in selection)
+            {
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="@item.Url()" class="featured-link">
+                            <div class="thumbnail-blog">
+                                <div class="thumbnail-img" style="background-image:url('@(item.Value<IPublishedContent>("articleImage").Url())')"></div>
+                                <h5>@item.Name()</h5>
+                            </div>
+                        </a>
+                        @using (Html.BeginUmbracoForm<AddWishlistController>("Remove", new AddWishlistProduct.CommandRequest { ProductId = item.Id, ProductName = item.ArticleTitle, ProductQuantity = 1 }))
+                        {
+                            <input type="submit" value="Remove" class="btn btn-alert" />
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

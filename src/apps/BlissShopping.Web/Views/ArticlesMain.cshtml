@@ -1,0 +1,56 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ArticlesMain>
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@using BlissShopping.Core.Features;
+@using BlissShopping.Core.Controllers
+@{
+	Layout = "Master.cshtml";
+}
+		<!-- Jumbotron, w title -->
+		<div class="jumbotron text-center jumbotron-fluid">
+			<div class="container">
+				<h1 class="display-1">@Model.Value("articlesTitle")</h1>
+				<p>What we do when we do what we do - and why!</p>
+			</div>
+		</div>
+
+		<!-- Main container -->
+		<div class="container">
+
+			<!-- Featured blogpost -->
+			<div class="row section">
+				<div class="col-md-12">
+				@Model.Value("articlesBodyText")
+				</div>
+			</div>
+
+			<!-- Latest blog posts -->
+			<div class="row section">
+				<div class="col-md-12">
+					<h3>Top Products</h3>
+					
+            @{
+            	var selection = Model
+                .ChildrenOfType("articlesItem")
+                .Where(x => x.IsVisible())
+                .OrderByDescending(x => x.CreateDate);
+            }
+            <div class="row">
+            	@foreach (var item in selection)
+            	{
+            	<div class="col-md-3">
+            	    <a href="@item.Url()" class="featured-link"><div class="thumbnail-blog">
+            						<div class="thumbnail-img" style="background-image:url('@(item.Value<IPublishedContent>("articleImage").Url())')"></div>
+            						<h5>@item.Name()</h5>
+            					</div></a>
+            	     @using (Html.BeginUmbracoForm<AddWishlistController>("HandleSubmit", new AddWishlistProduct.CommandRequest { ProductId = item.Id, ProductName = item.Name, ProductQuantity = 1} ))
+                            {
+                                <input type="submit" value=" + " class="btn btn-add"  alt="Add to Wishlist" />
+                            }
+                </div>
+            	}
+            </div>
+
+				</div>
+			</div>
+		</div>
